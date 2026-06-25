@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elo Win Probability — FEA Hub</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #f8f7f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e0da;
+    border-radius: 4px;
+    padding: 2rem 2.25rem 2.25rem;
+    max-width: 540px;
+    width: 100%;
+  }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: normal;
+    color: #1a1a1a;
+    line-height: 1.35;
+    margin-bottom: 0.4rem;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    font-family: 'Helvetica Neue', sans-serif;
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .formula {
+    background: #f3f2ef;
+    border-left: 3px solid #2563eb;
+    border-radius: 0 4px 4px 0;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.75rem;
+    font-family: 'Courier New', monospace;
+    font-size: 13.5px;
+    color: #1a1a1a;
+    line-height: 1.8;
+  }
+
+  .formula .eq {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+  }
+
+  .fraction .num {
+    border-bottom: 1.5px solid #1a1a1a;
+    padding: 0 3px 2px;
+    font-size: 13px;
+  }
+
+  .fraction .den {
+    padding: 2px 3px 0;
+    font-size: 13px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ctrl-group label {
+    display: block;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b6b6b;
+    margin-bottom: 4px;
+  }
+
+  .ctrl-group .val {
+    font-family: 'Courier New', monospace;
+    font-size: 22px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e2e0da;
+    border-radius: 99px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+  }
+
+  input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: none;
+    cursor: pointer;
+  }
+
+  .result {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .result-left {
+    flex: 1;
+  }
+
+  .result-label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin-bottom: 8px;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: #dbeafe;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 99px;
+    transition: width 0.25s ease;
+  }
+
+  .result-pct {
+    font-family: 'Courier New', monospace;
+    font-size: 36px;
+    font-weight: bold;
+    color: #1e40af;
+    white-space: nowrap;
+  }
+
+  .note {
+    margin-top: 1rem;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    color: #9b9b9b;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="eyebrow">FEA Hub · World Cup Simulator</div>
+  <h1>Elo win probability</h1>
+  <p class="subtitle">How likely is team A to beat team B? Adjust the Elo ratings below and watch the probability update in real time.</p>
+
+  <div class="formula">
+    <div class="eq">
+      P(A wins) &nbsp;=&nbsp;
+      <span class="fraction">
+        <span class="num">1</span>
+        <span class="den">1 + 10 <sup style="font-size:10px">(Elo<sub style="font-size:9px">B</sub> − Elo<sub style="font-size:9px">A</sub>) / 400</sup></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Team A — Elo rating</label>
+      <div class="val" id="valA">2000</div>
+      <input type="range" id="sliderA" min="1600" max="2200" value="2000" step="10">
+    </div>
+    <div class="ctrl-group">
+      <label>Team B — Elo rating</label>
+      <div class="val" id="valB">1800</div>
+      <input type="range" id="sliderB" min="1600" max="2200" value="1800" step="10">
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="result-left">
+      <div class="result-label">P(A wins)</div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar" style="width: 76%"></div>
+      </div>
+    </div>
+    <div class="result-pct" id="pct">76%</div>
+  </div>
+
+  <p class="note">Equal ratings → 50/50. A gap of 400 points gives the stronger side roughly a 91% chance. Built for Beyond the Scoreline.</p>
+</div>
+
+<script>
+  const sA = document.getElementById('sliderA');
+  const sB = document.getElementById('sliderB');
+
+  function update() {
+    const a = parseInt(sA.value);
+    const b = parseInt(sB.value);
+    document.getElementById('valA').textContent = a;
+    document.getElementById('valB').textContent = b;
+    const p = 1 / (1 + Math.pow(10, (b - a) / 400));
+    const pct = Math.round(p * 100);
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('bar').style.width = pct + '%';
+  }
+
+  sA.addEventListener('input', update);
+  sB.addEventListener('input', update);
+  update();
+</script>
+
+</body>
+</html>
